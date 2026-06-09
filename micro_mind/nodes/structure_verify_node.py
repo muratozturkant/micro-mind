@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from micro_mind.core.execution_context import ExecutionContext
 from micro_mind.nodes.base_node import BaseNode
 
 
@@ -9,11 +10,20 @@ class StructureVerifyNode(BaseNode):
 
     def execute(
         self,
-        project_root,
-        required_directories: list[str],
-        required_files: list[str],
+        project_root=None,
+        required_directories: list[str] | None = None,
+        required_files: list[str] | None = None,
+        context: ExecutionContext | None = None,
     ) -> dict:
-        root = Path(project_root)
+        if context:
+            root = Path(context.project_root)
+            required_directories = context.metadata["required_directories"]
+            required_files = context.metadata["required_files"]
+        else:
+            root = Path(project_root)
+            required_directories = required_directories or []
+            required_files = required_files or []
+
         missing_directories = [
             relative_path
             for relative_path in required_directories
@@ -25,7 +35,7 @@ class StructureVerifyNode(BaseNode):
             if not (root / relative_path).is_file()
         ]
 
-        return {
+        result = {
             "success": not missing_directories and not missing_files,
             "missing_directories": missing_directories,
             "missing_files": missing_files,
@@ -38,3 +48,6 @@ class StructureVerifyNode(BaseNode):
                 for relative_path in required_files
             },
         }
+        if context:
+            context.verification_result = result
+        return result

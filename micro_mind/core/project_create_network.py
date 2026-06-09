@@ -1,5 +1,6 @@
 from time import perf_counter
 
+from micro_mind.core.execution_context import ExecutionContext
 from micro_mind.nodes.directory_create_node import DirectoryCreateNode
 from micro_mind.nodes.memory_node import MemoryNode
 from micro_mind.nodes.question_node import QuestionNode
@@ -21,57 +22,47 @@ class ProjectCreateNetwork:
 
     def execute(self, task: str, project_name, project_type: str, target_directory) -> dict:
         started_at = perf_counter()
-        nodes_used: list[str] = []
-
-        question_result = self.question_node.run(
+        context = ExecutionContext(
+            task_type=task,
             project_name=project_name,
             project_type=project_type,
             target_directory=target_directory,
         )
-        nodes_used.append(self.question_node.node_name)
+        context.metadata["nodes_used"] = []
 
-        directory_result = self.directory_create_node.run(question_result)
-        nodes_used.append(self.directory_create_node.node_name)
+        self.question_node.run(context=context)
+        context.metadata["nodes_used"].append(self.question_node.node_name)
 
-        verification_result = self.structure_verify_node.run(
-            project_root=directory_result["project_root"],
-            required_directories=directory_result["required_directories"],
-            required_files=directory_result["required_files"],
-        )
-        nodes_used.append(self.structure_verify_node.node_name)
+        self.directory_create_node.run(context)
+        context.metadata["nodes_used"].append(self.directory_create_node.node_name)
 
-        result = "success" if verification_result["success"] else "failure"
+        self.structure_verify_node.run(context=context)
+        context.metadata["nodes_used"].append(self.structure_verify_node.node_name)
+
+        result = "success" if context.verification_result["success"] else "failure"
         duration_seconds = perf_counter() - started_at
+        context.metadata["result"] = result
+        context.metadata["duration_seconds"] = duration_seconds
+        context.metadata["nodes_used"].append(self.memory_node.node_name)
 
         memory_result = self.memory_node.run(
-            task=task,
-            project_name=question_result["project_name"],
-            project_type=question_result["project_type"],
-            target_directory=question_result["target_directory"],
-            result=result,
-            nodes_used=[*nodes_used, self.memory_node.node_name],
-            duration_seconds=duration_seconds,
-            created_directories=directory_result["created_directories"],
-            created_files=directory_result["created_files"],
-            verification_result=verification_result,
-            project_root=directory_result["project_root"],
+            context=context,
             nodes=self.nodes,
         )
-        nodes_used.append(self.memory_node.node_name)
 
         return {
             "task": task,
-            "project_name": question_result["project_name"],
-            "project_type": question_result["project_type"],
-            "target_directory": str(question_result["target_directory"]),
-            "project_root": str(directory_result["project_root"]),
+            "project_name": context.project_name,
+            "project_type": context.project_type,
+            "target_directory": str(context.target_directory),
+            "project_root": str(context.project_root),
             "result": result,
-            "nodes_used": nodes_used,
+            "nodes_used": context.metadata["nodes_used"],
             "duration_seconds": duration_seconds,
             "created_directories": [
-                str(path) for path in directory_result["created_directories"]
+                str(path) for path in context.created_directories
             ],
-            "created_files": [str(path) for path in directory_result["created_files"]],
-            "verification_result": verification_result,
+            "created_files": [str(path) for path in context.created_files],
+            "verification_result": context.verification_result,
             "memory_file": str(memory_result["memory_file"]),
         }

@@ -2,6 +2,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+from micro_mind.core.execution_context import ExecutionContext
 from micro_mind.nodes.base_node import BaseNode
 
 
@@ -11,19 +12,33 @@ class MemoryNode(BaseNode):
 
     def execute(
         self,
-        task: str,
-        project_name: str,
-        project_type: str,
-        target_directory,
-        result: str,
-        nodes_used: list[str],
-        duration_seconds: float,
-        created_directories: list[Path],
-        created_files: list[Path],
-        verification_result: dict,
-        project_root,
-        nodes: list[BaseNode],
+        task: str | None = None,
+        project_name: str | None = None,
+        project_type: str | None = None,
+        target_directory=None,
+        result: str | None = None,
+        nodes_used: list[str] | None = None,
+        duration_seconds: float | None = None,
+        created_directories: list[Path] | None = None,
+        created_files: list[Path] | None = None,
+        verification_result: dict | None = None,
+        project_root=None,
+        nodes: list[BaseNode] | None = None,
+        context: ExecutionContext | None = None,
     ) -> dict:
+        if context:
+            task = context.task_type
+            project_name = context.project_name
+            project_type = context.project_type
+            target_directory = context.target_directory
+            project_root = context.project_root
+            created_directories = context.created_directories
+            created_files = context.created_files
+            verification_result = context.verification_result
+            nodes_used = context.metadata["nodes_used"]
+            duration_seconds = context.metadata["duration_seconds"]
+            result = context.metadata["result"]
+
         root = Path(project_root)
         executions_directory = root / ".micro_mind" / "executions"
         nodes_directory = root / ".micro_mind" / "nodes"
@@ -32,6 +47,7 @@ class MemoryNode(BaseNode):
 
         timestamp = datetime.now(UTC).isoformat()
         memory = {
+            "task_id": context.task_id if context else None,
             "task": task,
             "project_name": project_name,
             "project_type": project_type,
@@ -49,11 +65,14 @@ class MemoryNode(BaseNode):
         memory_file = executions_directory / f"{safe_timestamp}.json"
         memory_file.write_text(json.dumps(memory, indent=2), encoding="utf-8")
 
-        for node in nodes:
+        for node in nodes or []:
             node_file = nodes_directory / f"{node.node_name}.json"
             stats = self._merge_stats(node_file, self._stats_for_storage(node))
             node_file.write_text(json.dumps(stats, indent=2), encoding="utf-8")
 
+        if context:
+            context.execution_memory = memory
+            context.metadata["memory_file"] = memory_file
         return {"memory_file": memory_file}
 
     def _stats_for_storage(self, node: BaseNode) -> dict:
