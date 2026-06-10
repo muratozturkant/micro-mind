@@ -1,5 +1,3 @@
-
-
 import argparse
 import json
 from pathlib import Path
@@ -11,6 +9,8 @@ from micro_mind.core.micro_task.micro_task_simulation_runner import (
 from micro_mind.core.project_tree.project_tree_record import ProjectTreeRecord
 from micro_mind.core.project_tree.project_tree_store import ProjectTreeStore
 from micro_mind.core.recipes.recipe_builder import RecipeBuilder
+from micro_mind.core.recipes.recipe_matcher import RecipeMatcher
+from micro_mind.core.recipes.recipe_runtime import RecipeRuntime
 from micro_mind.core.recipes.recipe_store import RecipeStore
 from micro_mind.core.species.local_llama_species import LocalLlamaSpecies
 
@@ -109,17 +109,55 @@ def _responsibility_from_target(target: str | None) -> str:
     return normalized.lower()
 
 
+def load_recipes(recipes_dir: str | Path) -> list[dict]:
+    store = RecipeStore(Path(recipes_dir))
+    listed = store.list().get("recipes", [])
+    recipes = []
+
+    for item in listed:
+        recipe_id = item.get("recipe_id")
+        if not recipe_id:
+            continue
+
+        loaded = store.load(recipe_id)
+        if loaded.get("status") == "loaded":
+            recipes.append(loaded["recipe"])
+
+    return recipes
+
+
 def main() -> None:
     args = build_parser().parse_args()
 
-    local_ai = LocalLlamaSpecies(
-        endpoint=args.endpoint,
-        model_name=args.model,
-        timeout=args.timeout,
+    recipes = load_recipes(args.recipes_dir)
+    recipe_match = RecipeMatcher().match(
+        task=args.task,
+        recipes=[recipe for recipe in recipes if recipe.get("approved") is True],
     )
 
-    micro_task_runner = MicroTaskSimulationRunner(local_ai=local_ai)
-    simulation_report = micro_task_runner.run(args.task)
+    ai_used = True
+    recipe_reuse_result = None
+
+    if recipe_match.get("status") == "matched":
+        recipe = recipe_match["best_match"]["recipe"]
+        simulation_report = RecipeRuntime().simulate_from_recipe(
+            recipe,
+            task=args.task,
+        )
+        ai_used = False
+        recipe_reuse_result = {
+            "status": "recipe_reused",
+            "recipe_id": recipe.get("recipe_id"),
+            "score": recipe_match["best_match"].get("score"),
+        }
+    else:
+        local_ai = LocalLlamaSpecies(
+            endpoint=args.endpoint,
+            model_name=args.model,
+            timeout=args.timeout,
+        )
+        micro_task_runner = MicroTaskSimulationRunner(local_ai=local_ai)
+        simulation_report = micro_task_runner.run(args.task)
 
     apply_report = None
     recipe_candidate = None
@@ -130,19 +168,22 @@ def main() -> None:
     if simulation_report.get("status") == "simulated":
         apply_report = ApplySimulationRunner().run(simulation_report)
 
-        recipe_candidate = RecipeBuilder().build_candidate(
-            task=args.task,
-            simulation_report=simulation_report,
-            apply_simulation_report=apply_report,
-        )
+        if ai_used:
+            recipe_candidate = RecipeBuilder().build_candidate(
+                task=args.task,
+                simulation_report=simulation_report,
+                apply_simulation_report=apply_report,
+            )
+            recipe_id = recipe_candidate.get("recipe_id")
+        else:
+            recipe_id = simulation_report.get("recipe_id")
 
-        recipe_id = recipe_candidate.get("recipe_id")
         project_tree_records = build_project_tree_records(
             simulation_report=simulation_report,
             recipe_id=recipe_id,
         )
 
-        if not args.no_save and recipe_candidate.get("status") == "recipe_candidate_created":
+        if not args.no_save and recipe_candidate and recipe_candidate.get("status") == "recipe_candidate_created":
             recipe_save_result = RecipeStore(Path(args.recipes_dir)).save(
                 recipe_candidate["recipe"]
             )
@@ -157,6 +198,9 @@ def main() -> None:
         if simulation_report.get("status") == "simulated"
         else simulation_report.get("status"),
         "task": args.task,
+        "ai_used": ai_used,
+        "recipe_match": recipe_match,
+        "recipe_reuse_result": recipe_reuse_result,
         "simulation_report": simulation_report,
         "apply_report": apply_report,
         "recipe_candidate": recipe_candidate,
