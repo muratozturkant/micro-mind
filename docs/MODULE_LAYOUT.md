@@ -57,6 +57,18 @@ micro_mind/
 │   │   ├── work_tree_logger.py
 │   │   └── MODULE.md
 │   │
+│   ├── species/
+│   │   ├── local_llama_species.py
+│   │   └── MODULE.md
+│   │
+│   ├── model_queue/
+│   │   ├── file_model_queue.py
+│   │   └── MODULE.md
+│   │
+│   ├── decision/
+│   │   ├── ai_suggestion_validator.py
+│   │   └── MODULE.md
+│   │
 │   ├── context/
 │   │   ├── execution_context.py
 │   │   └── MODULE.md
@@ -117,6 +129,12 @@ tests/
 │   │   └── test_node_registry.py
 │   ├── logging/
 │   │   └── test_work_tree_logger.py
+│   ├── species/
+│   │   └── test_local_llama_species.py
+│   ├── model_queue/
+│   │   └── test_file_model_queue.py
+│   ├── decision/
+│   │   └── test_ai_suggestion_validator.py
 │   └── context/
 │       └── test_execution_context.py
 │
@@ -236,6 +254,60 @@ Must not:
 
 - Decide whether a node should run
 - Modify files outside log files
+
+---
+
+### `core/species`
+
+Owns local advisor species integrations.
+
+Responsible for:
+
+- Calling local OpenAI-compatible model endpoints
+- Requesting deterministic JSON-only advisor output
+- Returning parsed and raw local model responses
+
+Must not:
+
+- Execute workflows
+- Apply changes
+- Call cloud models or fallbacks
+
+---
+
+### `core/model_queue`
+
+Owns local file-based model request queues.
+
+Responsible for:
+
+- Storing pending advisor requests
+- Recording completed advisor responses
+- Recording failed advisor requests
+
+Must not:
+
+- Use Redis or external queue services
+- Execute workflows
+- Call models directly
+
+---
+
+### `core/decision`
+
+Owns validation of advisor suggestions.
+
+Responsible for:
+
+- Validating parsed local AI responses
+- Rejecting unsupported task types
+- Routing low-confidence suggestions to human guidance
+
+Must not:
+
+- Execute workflows
+- Apply changes
+- Treat local AI output as final authority
 
 ---
 
