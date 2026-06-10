@@ -1,6 +1,6 @@
 
 
-from micro_mind.core.work_tree_logger import WorkTreeLogger
+from micro_mind.core.logging.work_tree_logger import WorkTreeLogger
 
 
 def test_work_tree_logger_writes_and_reads_entries(tmp_path):

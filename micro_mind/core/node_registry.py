@@ -1,5 +1,8 @@
 
 
+from micro_mind.nodes.project_structure_node import ProjectStructureNode
+
+
 class BaseExecutableNode:
     name = "BaseExecutableNode"
 
@@ -35,6 +38,7 @@ class NodeRegistry:
         self._nodes = {
             "TaskPlannerNode": TaskPlannerExecutableNode,
             "MemoryNode": MemoryExecutableNode,
+            "ProjectStructureNode": ProjectStructureNode,
             "HumanGuidanceNode": HumanGuidanceExecutableNode,
         }
 

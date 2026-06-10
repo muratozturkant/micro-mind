@@ -9,7 +9,7 @@ class NodeFactory:
             "create_project_structure": {
                 "node_type": "execution",
                 "node_name": "ProjectStructureNode",
-                "status": "planned_not_implemented",
+                "status": "available",
             },
             "install_dependencies": {
                 "node_type": "execution",

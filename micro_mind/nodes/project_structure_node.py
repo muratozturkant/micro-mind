@@ -2,7 +2,7 @@
 
 
 from pathlib import Path
-from micro_mind.core.work_tree_logger import WorkTreeLogger
+from micro_mind.core.logging.work_tree_logger import WorkTreeLogger
 
 
 class ProjectStructureNode:
