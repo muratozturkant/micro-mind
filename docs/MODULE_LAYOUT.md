@@ -69,6 +69,13 @@ micro_mind/
 │   │   ├── ai_suggestion_validator.py
 │   │   └── MODULE.md
 │   │
+│   ├── micro_task/
+│   │   ├── micro_question_builder.py
+│   │   ├── ai_fact_normalizer.py
+│   │   ├── micro_task_chain_builder.py
+│   │   ├── micro_task_simulator.py
+│   │   └── MODULE.md
+│   │
 │   ├── context/
 │   │   ├── execution_context.py
 │   │   └── MODULE.md
@@ -135,6 +142,11 @@ tests/
 │   │   └── test_file_model_queue.py
 │   ├── decision/
 │   │   └── test_ai_suggestion_validator.py
+│   ├── micro_task/
+│   │   ├── test_micro_question_builder.py
+│   │   ├── test_ai_fact_normalizer.py
+│   │   ├── test_micro_task_chain_builder.py
+│   │   └── test_micro_task_simulator.py
 │   └── context/
 │       └── test_execution_context.py
 │
@@ -308,6 +320,26 @@ Must not:
 - Execute workflows
 - Apply changes
 - Treat local AI output as final authority
+
+---
+
+### `core/micro_task`
+
+Owns simulation-only micro task planning.
+
+Responsible for:
+
+- Building small local advisor questions
+- Normalizing local AI facts into dependencies, tree entries and responsibilities
+- Creating planned micro task chain JSON
+- Returning sleeping state when no work is present
+
+Must not:
+
+- Write real project files
+- Run shell commands or package installation
+- Deploy, use Docker or apply changes to a real workspace
+- Add cloud fallback
 
 ---
 

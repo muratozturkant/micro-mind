@@ -55,7 +55,13 @@ Species Knowledge
 ↓
 Memory Search
 ↓
-Local AI Advisor
+Micro Question Builder
+↓
+Local AI Fact Collector
+↓
+Raw Fact Normalizer
+↓
+Task Decomposer
 ↓
 Validation
 ↓
@@ -185,19 +191,63 @@ The logic layer decides whether the memory is close enough to reuse.
 
 ---
 
-## Layer 4 — Local AI Advisor
+## Layer 4 — Micro Question Builder
+
+The system should not ask broad questions when a smaller question is enough.
+
+Bad broad question:
+
+```text
+Classify task: Create Fastify API with Redis cache
+```
+
+This produces model-specific answers such as:
+
+```text
+software_development
+backend_development
+Backend Development
+feature_implementation
+```
+
+Those are useful signals, but they are not stable enough to directly drive Micro Mind workflows.
+
+Instead, Micro Mind should split a macro task into micro questions.
+
+Example macro task:
+
+```text
+Create Fastify API with Redis cache
+```
+
+Example micro questions:
+
+```text
+For a Node.js Fastify backend API with Redis cache, which npm packages are typically required?
+```
+
+```text
+For Node.js Fastify API with Redis cache, list required implementation steps as compact JSON. No descriptions. Max 8 steps.
+```
+
+Micro questions should ask for one small fact or one small list.
+
+---
+
+## Layer 5 — Local AI Fact Collector
 
 The local model is used only when deterministic logic and memory are not enough.
 
-The local model is an advisor, not the authority.
+The local model is a fact collector, not the authority.
 
 Allowed local AI tasks:
 
-- classify an unknown task
-- extract technologies
-- suggest a workflow candidate
+- answer one specific micro question
+- extract required packages
+- list compact implementation steps
+- identify technologies mentioned in a task
+- suggest missing facts needed for planning
 - explain why a task is unfamiliar
-- suggest which existing species may be relevant
 
 Not allowed:
 
@@ -206,50 +256,115 @@ Not allowed:
 - bypassing simulation
 - deciding final workflow alone
 - using cloud fallback automatically
+- being trusted to know Micro Mind's internal enum names
 
 ---
 
-## Local AI Request Rules
+## Layer 6 — Raw Fact Normalizer
 
-For `ik_llama.cpp`, calls should use low-cost deterministic settings.
+AI providers and local models will return different shapes for the same question.
 
-Known working pattern:
+Example Gemini-style response:
 
 ```json
 {
-  "temperature": 0,
-  "max_tokens": 128,
-  "chat_template_kwargs": {
-    "enable_thinking": false
+  "task_type": "Backend Development",
+  "technologies": ["Fastify", "Redis", "Node.js"],
+  "action": "Create API with caching"
+}
+```
+
+Example Copilot-style response:
+
+```json
+{
+  "task": "Create Fastify API with Redis cache",
+  "classification": {
+    "category": "backend_development",
+    "subcategories": ["api_development", "caching", "infrastructure"],
+    "technologies": ["fastify", "redis", "node.js"],
+    "complexity": "medium",
+    "type": "feature_implementation"
   }
 }
 ```
 
-Reason:
+Example local model response:
 
-- `enable_thinking=false` prevents long reasoning output.
-- `temperature=0` improves consistency.
-- low `max_tokens` keeps response economical.
-- JSON-only prompts are easier to validate.
+```json
+{
+  "task_type": "software_development",
+  "category": "backend_development",
+  "description": "Create a Fastify API with Redis cache",
+  "tags": ["fastify", "redis", "api", "caching", "node.js"]
+}
+```
 
-The local model should return compact JSON.
+The normalizer converts these raw facts into Micro Mind's canonical internal representation.
 
-Example output:
+Example canonical output:
 
 ```json
 {
   "task_type": "backend_api",
   "runtime": "nodejs",
-  "framework": "express",
-  "database": "mongodb",
-  "auth": "jwt",
-  "confidence": 0.86
+  "framework": "fastify",
+  "cache": "redis",
+  "technologies": ["fastify", "redis", "nodejs"],
+  "confidence": 0.82
 }
 ```
 
+The AI does not need to know this canonical schema.
+
+Micro Mind owns normalization.
+
 ---
 
-## Layer 5 — Validation
+## Layer 7 — Task Decomposer
+
+The task decomposer converts normalized facts into an ordered task chain.
+
+Example normalized facts:
+
+```json
+{
+  "task_type": "backend_api",
+  "runtime": "nodejs",
+  "framework": "fastify",
+  "cache": "redis"
+}
+```
+
+Example task chain:
+
+```text
+task_0: backend_project_setup
+task_0.1: prepare_node_runtime
+task_0.2: create_project_structure
+task_0.3: install_fastify
+task_0.4: install_redis_client
+task_0.5: create_fastify_app
+task_0.6: create_redis_connection
+task_0.7: integrate_cache_layer
+task_0.8: verify_backend_boot
+```
+
+Everything becomes a chain.
+
+If information is missing, the decomposer should add an information request task instead of guessing.
+
+Example:
+
+```text
+task_0.4: ask_required_redis_connection_details
+```
+
+The decomposer does not apply changes. It only builds task chains.
+
+---
+
+## Layer 8 — Validation
 
 Every AI suggestion must be validated before it can be used.
 
@@ -277,7 +392,7 @@ status = rejected_ai_suggestion
 
 ---
 
-## Layer 6 — Simulation
+## Layer 9 — Simulation
 
 Even validated plans should not directly touch the real project.
 
@@ -303,7 +418,7 @@ Apply to real workspace only if safe
 
 ---
 
-## Layer 7 — Human Guidance
+## Layer 10 — Human Guidance
 
 Human guidance is not a failure.
 
@@ -525,9 +640,15 @@ Species knowledge fails
 ↓
 Memory search has no strong match
 ↓
-Local AI advisor creates suggestion
+Micro Question Builder creates specific questions
 ↓
-Suggestion is validated
+Local AI Fact Collector gathers raw facts
+↓
+Raw Fact Normalizer converts facts to canonical representation
+↓
+Task Decomposer builds task chain
+↓
+Validation checks chain safety
 ↓
 If valid but uncertain → human guidance
 ↓
@@ -579,6 +700,13 @@ Therefore:
 Do not ask the model what deterministic code already knows.
 ```
 
+Also:
+
+```text
+Do not spend tokens teaching every model Micro Mind's private enum schema.
+Ask smaller factual questions and normalize the answers locally.
+```
+
 ---
 
 ## Current Implementation Direction
@@ -595,6 +723,12 @@ micro_mind/core/decision/
 micro_mind/core/species/
 ├── local_llama_species.py
 ├── local_model_queue.py
+└── MODULE.md
+
+micro_mind/core/normalization/
+├── ai_response_normalizer.py
+├── task_decomposer.py
+├── micro_question_builder.py
 └── MODULE.md
 ```
 
@@ -623,7 +757,10 @@ The correct order is:
 ```text
 Recipes first.
 Memory second.
-Local AI advisor third.
+Micro questions third.
+Local AI fact collection fourth.
+Normalize locally.
+Decompose into task chains.
 Human guidance when uncertain.
 Simulation before apply.
 ```
