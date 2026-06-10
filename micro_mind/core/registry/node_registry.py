@@ -1,6 +1,6 @@
 
 
-from micro_mind.nodes.project_structure_node import ProjectStructureNode
+from micro_mind.nodes.project_structure.project_structure_node import ProjectStructureNode
 
 
 class BaseExecutableNode:

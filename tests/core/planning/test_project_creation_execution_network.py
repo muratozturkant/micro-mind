@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from micro_mind.core.project_creation_execution_network import (
+from micro_mind.core.planning.project_creation_execution_network import (
     ProjectCreationExecutionNetwork,
 )
 

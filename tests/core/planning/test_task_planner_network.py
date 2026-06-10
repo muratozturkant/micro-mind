@@ -1,7 +1,7 @@
 
 
-from micro_mind.core.task_planner_network import TaskPlannerNetwork
-from micro_mind.core.node_factory import NodeFactory
+from micro_mind.core.planning.task_planner_network import TaskPlannerNetwork
+from micro_mind.core.registry.node_factory import NodeFactory
 
 
 def test_task_planner_network_creates_nodejs_express_mongodb_jwt_plan():

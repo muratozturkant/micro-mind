@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from micro_mind.core.execution_context import ExecutionContext
+from micro_mind.core.context.execution_context import ExecutionContext
 from micro_mind.core.root_planner import RootPlanner
 
 

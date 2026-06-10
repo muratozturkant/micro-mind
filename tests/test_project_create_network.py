@@ -5,7 +5,7 @@ from pathlib import Path
 
 from micro_mind.core.root_planner import RootPlanner
 from micro_mind.nodes.base_node import BaseNode
-from micro_mind.nodes.memory_node import MemoryNode
+from micro_mind.nodes.memory.memory_node import MemoryNode
 
 
 class ProjectCreateNetworkTest(unittest.TestCase):

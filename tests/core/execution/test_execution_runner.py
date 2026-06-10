@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from micro_mind.core.execution_runner import ExecutionRunner
+from micro_mind.core.execution.execution_runner import ExecutionRunner
 
 
 def test_execution_runner_executes_available_nodes_and_skips_unimplemented_nodes(tmp_path):

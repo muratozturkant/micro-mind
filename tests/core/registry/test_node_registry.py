@@ -1,6 +1,6 @@
 
 
-from micro_mind.core.node_registry import NodeRegistry
+from micro_mind.core.registry.node_registry import NodeRegistry
 
 
 def test_node_registry_returns_executable_node_instance():

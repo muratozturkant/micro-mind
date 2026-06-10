@@ -1,10 +1,10 @@
 from time import perf_counter
 
-from micro_mind.core.execution_context import ExecutionContext
-from micro_mind.nodes.directory_create_node import DirectoryCreateNode
-from micro_mind.nodes.memory_node import MemoryNode
-from micro_mind.nodes.question_node import QuestionNode
-from micro_mind.nodes.structure_verify_node import StructureVerifyNode
+from micro_mind.core.context.execution_context import ExecutionContext
+from micro_mind.nodes.filesystem.directory_create_node import DirectoryCreateNode
+from micro_mind.nodes.memory.memory_node import MemoryNode
+from micro_mind.nodes.questioning.question_node import QuestionNode
+from micro_mind.nodes.verification.structure_verify_node import StructureVerifyNode
 
 
 class ProjectCreateNetwork:

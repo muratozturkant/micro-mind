@@ -2,7 +2,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
-from micro_mind.core.execution_context import ExecutionContext
+from micro_mind.core.context.execution_context import ExecutionContext
 from micro_mind.nodes.base_node import BaseNode
 
 

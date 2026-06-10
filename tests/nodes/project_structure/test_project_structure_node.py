@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from micro_mind.nodes.project_structure_node import ProjectStructureNode
+from micro_mind.nodes.project_structure.project_structure_node import ProjectStructureNode
 
 
 def test_project_structure_node_creates_project_directories_and_files(tmp_path):

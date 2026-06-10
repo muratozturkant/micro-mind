@@ -1,5 +1,5 @@
-from micro_mind.nodes.memory_read_node import MemoryReadNode
-from micro_mind.nodes.memory_summary_node import MemorySummaryNode
+from micro_mind.nodes.memory.memory_read_node import MemoryReadNode
+from micro_mind.nodes.memory.memory_summary_node import MemorySummaryNode
 
 
 class MemoryReaderNetwork:

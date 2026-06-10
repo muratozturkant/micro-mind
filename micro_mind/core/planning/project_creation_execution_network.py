@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from micro_mind.core.task_planner_network import TaskPlannerNetwork
-from micro_mind.nodes.project_structure_node import ProjectStructureNode
+from micro_mind.core.planning.task_planner_network import TaskPlannerNetwork
+from micro_mind.nodes.project_structure.project_structure_node import ProjectStructureNode
 
 
 class ProjectCreationExecutionNetwork:

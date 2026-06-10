@@ -1,5 +1,5 @@
-from micro_mind.core.node_factory import NodeFactory
-from micro_mind.core.node_registry import NodeRegistry
+from micro_mind.core.registry.node_factory import NodeFactory
+from micro_mind.core.registry.node_registry import NodeRegistry
 
 
 class ExecutionRunner:

@@ -1,5 +1,5 @@
 from micro_mind.core.memory_reader_network import MemoryReaderNetwork
-from micro_mind.core.project_create_network import ProjectCreateNetwork
+from micro_mind.core.project_creation.project_create_network import ProjectCreateNetwork
 
 
 class RootPlanner:
