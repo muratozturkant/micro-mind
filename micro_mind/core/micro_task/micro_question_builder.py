@@ -14,20 +14,18 @@ class MicroQuestionBuilder:
                 "question_id": "project_structure",
                 "fact_key": "structure",
                 "prompt": (
-                    "For a basic Node.js backend API setup, list the recommended "
-                    "project structure as compact JSON only. Max 10 directories "
-                    "or files. No descriptions."
+                    "For a basic Node.js backend API setup, list only 7 essential "
+                    "project paths as compact JSON only. Include src/app.js, "
+                    "routes, controllers, config, package.json. No descriptions."
                 ),
             },
             {
                 "question_id": "file_responsibilities",
                 "fact_key": "responsibilities",
                 "prompt": (
-                    "For a basic Node.js backend API setup with Express, list the "
-                    "purpose of each file or directory as compact JSON only. Use "
-                    "this list: src, src/app.js, src/routes, src/controllers, "
-                    "src/middleware, src/config, src/models, package.json, "
-                    "README.md, .gitignore. No descriptions longer than 8 words."
+                    "Map these Node.js API paths to max 3-word purposes as compact "
+                    "JSON only: src, src/app.js, src/routes, src/controllers, "
+                    "src/config, package.json. No extra keys."
                 ),
             },
         ]

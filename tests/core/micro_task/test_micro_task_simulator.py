@@ -14,7 +14,7 @@ class FakeLocalLlamaSpecies:
                 "raw_response": {"source": "fake"},
                 "error": None,
             }
-        if "recommended project structure" in task:
+        if "7 essential project paths" in task:
             return {
                 "status": "completed",
                 "parsed_response": [

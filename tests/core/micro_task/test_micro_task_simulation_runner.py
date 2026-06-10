@@ -16,7 +16,7 @@ class FakeLocalAI:
                 "raw_response": {"answer": "packages"},
                 "error": None,
             }
-        if "recommended project structure" in question:
+        if "7 essential project paths" in question:
             return {
                 "status": "completed",
                 "parsed_response": [

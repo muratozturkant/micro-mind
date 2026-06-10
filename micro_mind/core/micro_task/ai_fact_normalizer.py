@@ -23,12 +23,73 @@ class AIFactNormalizer:
         structure = self.parse_json(structure or [])
         responsibilities = self.parse_json(responsibilities or {})
 
+        package_values = self._extract_package_values(packages)
+        structure_values = self._extract_structure_values(structure)
+        responsibility_values = self._extract_responsibility_values(responsibilities)
+
         return {
-            "dependencies": self._normalize_list(packages),
-            "directories": self._normalize_structure(structure, want="directory"),
-            "files": self._normalize_structure(structure, want="file"),
-            "responsibilities": self._normalize_responsibilities(responsibilities),
+            "dependencies": self._normalize_list(package_values),
+            "directories": self._normalize_structure(structure_values, want="directory"),
+            "files": self._normalize_structure(structure_values, want="file"),
+            "responsibilities": self._normalize_responsibilities(responsibility_values),
         }
+
+    def _extract_package_values(self, value):
+        if isinstance(value, list):
+            return value
+
+        if isinstance(value, dict):
+            for key in ("packages", "dependencies", "required_packages", "npm_packages"):
+                items = value.get(key)
+                if isinstance(items, list):
+                    return items
+
+        return []
+
+    def _extract_structure_values(self, value):
+        if isinstance(value, list):
+            return value
+
+        if isinstance(value, dict):
+            for key in (
+                "structure",
+                "project_structure",
+                "files_and_directories",
+                "paths",
+                "items",
+            ):
+                items = value.get(key)
+                if isinstance(items, list):
+                    return items
+
+            directories = value.get("directories")
+            files = value.get("files")
+            combined = []
+
+            if isinstance(directories, list):
+                combined.extend(directories)
+
+            if isinstance(files, list):
+                combined.extend(files)
+
+            if combined:
+                return combined
+
+        return []
+
+    def _extract_responsibility_values(self, value):
+        if not isinstance(value, dict):
+            return {}
+
+        content = value.get("content")
+        if isinstance(content, dict):
+            return content
+
+        responsibilities = value.get("responsibilities")
+        if isinstance(responsibilities, dict):
+            return responsibilities
+
+        return value
 
     def _normalize_list(self, values):
         normalized = []
