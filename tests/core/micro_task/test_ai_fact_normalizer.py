@@ -53,6 +53,7 @@ def test_ai_fact_normalizer_normalizes_packages_structure_and_responsibilities()
             "src/models",
         ],
         "files": ["src/app.js", "package.json", "README.md", ".gitignore"],
+        "task_specific_files": [],
         "responsibilities": {
             "src": "Application source code directory",
             "src/app.js": "Main application entry point",

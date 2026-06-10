@@ -1,0 +1,658 @@
+{
+  "recipe_id": "create_a_node_js_express_health_check_api_v1",
+  "status": "approved",
+  "approved": true,
+  "task_family": "nodejs_backend_api",
+  "title": "Create a Node.js Express health check API",
+  "description": "Create a Node.js Express health check API",
+  "tags": [
+    "cors",
+    "dotenv",
+    "express",
+    "nodejs"
+  ],
+  "facts": {
+    "dependencies": [
+      "express",
+      "dotenv",
+      "cors"
+    ],
+    "directories": [
+      "src/routes",
+      "src/controllers",
+      "src/config",
+      "src/middleware",
+      "src/utils"
+    ],
+    "files": [
+      "src/app.js",
+      "package.json"
+    ],
+    "responsibilities": {
+      "src": "Project root",
+      "src/app.js": "App entry point",
+      "src/routes": "API route definitions",
+      "src/controllers": "Request handlers",
+      "src/config": "App configuration",
+      "package.json": "Dependency manifest"
+    }
+  },
+  "micro_tasks": [
+    {
+      "id": "task_0.1",
+      "type": "install_package",
+      "target": "express",
+      "status": "planned"
+    },
+    {
+      "id": "task_0.2",
+      "type": "install_package",
+      "target": "dotenv",
+      "status": "planned"
+    },
+    {
+      "id": "task_0.3",
+      "type": "install_package",
+      "target": "cors",
+      "status": "planned"
+    },
+    {
+      "id": "task_1.1",
+      "type": "create_directory",
+      "target": "src/routes",
+      "status": "planned"
+    },
+    {
+      "id": "task_1.2",
+      "type": "create_directory",
+      "target": "src/controllers",
+      "status": "planned"
+    },
+    {
+      "id": "task_1.3",
+      "type": "create_directory",
+      "target": "src/config",
+      "status": "planned"
+    },
+    {
+      "id": "task_1.4",
+      "type": "create_directory",
+      "target": "src/middleware",
+      "status": "planned"
+    },
+    {
+      "id": "task_1.5",
+      "type": "create_directory",
+      "target": "src/utils",
+      "status": "planned"
+    },
+    {
+      "id": "task_1.6",
+      "type": "create_file",
+      "target": "src/app.js",
+      "status": "planned"
+    },
+    {
+      "id": "task_1.7",
+      "type": "create_file",
+      "target": "package.json",
+      "status": "planned"
+    },
+    {
+      "id": "task_2.1",
+      "type": "verify_file",
+      "target": "src/app.js",
+      "status": "planned"
+    },
+    {
+      "id": "task_2.2",
+      "type": "verify_file",
+      "target": "package.json",
+      "status": "planned"
+    }
+  ],
+  "questions": [
+    {
+      "id": "question_0.1",
+      "purpose": "collect_base_packages",
+      "question": "For a basic Node.js backend API setup, list the required npm packages as compact JSON only. No descriptions. No Redis. No database-specific packages unless essential.",
+      "raw_response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\n  \"packages\": [\n    \"express\",\n    \"dotenv\",\n    \"cors\"\n  ]\n}"
+            }
+          }
+        ],
+        "created": 1781094794,
+        "model": "local-qwen",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 28,
+          "prompt_tokens": 82,
+          "total_tokens": 110,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-85jsoH21zSDEJawuRTebZieVT1nC2w9R",
+        "timings": {
+          "prompt_n": 82,
+          "prompt_ms": 649.823,
+          "prompt_per_token_ms": 7.924670731707317,
+          "prompt_per_second": 126.18820817361035,
+          "predicted_n": 28,
+          "predicted_ms": 1519.659,
+          "predicted_per_token_ms": 54.27353571428572,
+          "predicted_per_second": 18.425186176635677,
+          "n_ctx": 16384,
+          "n_past": 109
+        }
+      },
+      "normalized_fact": {
+        "dependencies": [
+          "express",
+          "dotenv",
+          "cors"
+        ]
+      }
+    },
+    {
+      "id": "question_1.1",
+      "purpose": "collect_project_structure",
+      "question": "For a basic Node.js backend API setup, list only 7 essential project paths as compact JSON only. Include src/app.js, routes, controllers, config, package.json. No descriptions.",
+      "raw_response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\n  \"task_type\": \"code_structure\",\n  \"paths\": [\n    \"src/app.js\",\n    \"src/routes\",\n    \"src/controllers\",\n    \"src/config\",\n    \"package.json\",\n    \"src/middleware\",\n    \"src/utils\"\n  ]\n}"
+            }
+          }
+        ],
+        "created": 1781094798,
+        "model": "local-qwen",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 67,
+          "prompt_tokens": 88,
+          "total_tokens": 155,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-G9rKw4LKIiA8cVwOz70p0V2MRZwk7dsl",
+        "timings": {
+          "prompt_n": 88,
+          "prompt_ms": 667.911,
+          "prompt_per_token_ms": 7.589897727272727,
+          "prompt_per_second": 131.75408100779896,
+          "predicted_n": 67,
+          "predicted_ms": 3720.161,
+          "predicted_per_token_ms": 55.52479104477612,
+          "predicted_per_second": 18.00997322427712,
+          "n_ctx": 16384,
+          "n_past": 154
+        }
+      },
+      "normalized_fact": {
+        "directories": [
+          "src/routes",
+          "src/controllers",
+          "src/config",
+          "src/middleware",
+          "src/utils"
+        ],
+        "files": [
+          "src/app.js",
+          "package.json"
+        ]
+      }
+    },
+    {
+      "id": "question_2.1",
+      "purpose": "collect_file_responsibilities",
+      "question": "Map these Node.js API paths to max 3-word purposes as compact JSON only: src, src/app.js, src/routes, src/controllers, src/config, package.json. No extra keys.",
+      "raw_response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "{\"src\":\"Project root\",\"src/app.js\":\"App entry point\",\"src/routes\":\"API route definitions\",\"src/controllers\":\"Request handlers\",\"src/config\":\"App configuration\",\"package.json\":\"Dependency manifest\"}"
+            }
+          }
+        ],
+        "created": 1781094802,
+        "model": "local-qwen",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 40,
+          "prompt_tokens": 89,
+          "total_tokens": 129,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "id": "chatcmpl-ph8pSxFdtjak3tbZRv3Mndj60f9cBQpZ",
+        "timings": {
+          "prompt_n": 89,
+          "prompt_ms": 670.206,
+          "prompt_per_token_ms": 7.530404494382022,
+          "prompt_per_second": 132.79499139070674,
+          "predicted_n": 40,
+          "predicted_ms": 2184.337,
+          "predicted_per_token_ms": 54.608425,
+          "predicted_per_second": 18.312192669903958,
+          "n_ctx": 16384,
+          "n_past": 128
+        }
+      },
+      "normalized_fact": {
+        "responsibilities": {
+          "src": "Project root",
+          "src/app.js": "App entry point",
+          "src/routes": "API route definitions",
+          "src/controllers": "Request handlers",
+          "src/config": "App configuration",
+          "package.json": "Dependency manifest"
+        }
+      }
+    }
+  ],
+  "simulation": {
+    "status": "simulated",
+    "summary": {
+      "status": "simulated",
+      "task": "Create a Node.js Express health check API",
+      "facts": {
+        "dependencies": [
+          "express",
+          "dotenv",
+          "cors"
+        ],
+        "directories": [
+          "src/routes",
+          "src/controllers",
+          "src/config",
+          "src/middleware",
+          "src/utils"
+        ],
+        "files": [
+          "src/app.js",
+          "package.json"
+        ],
+        "responsibilities": {
+          "src": "Project root",
+          "src/app.js": "App entry point",
+          "src/routes": "API route definitions",
+          "src/controllers": "Request handlers",
+          "src/config": "App configuration",
+          "package.json": "Dependency manifest"
+        }
+      },
+      "micro_tasks": [
+        {
+          "id": "task_0.1",
+          "type": "install_package",
+          "target": "express",
+          "status": "planned"
+        },
+        {
+          "id": "task_0.2",
+          "type": "install_package",
+          "target": "dotenv",
+          "status": "planned"
+        },
+        {
+          "id": "task_0.3",
+          "type": "install_package",
+          "target": "cors",
+          "status": "planned"
+        },
+        {
+          "id": "task_1.1",
+          "type": "create_directory",
+          "target": "src/routes",
+          "status": "planned"
+        },
+        {
+          "id": "task_1.2",
+          "type": "create_directory",
+          "target": "src/controllers",
+          "status": "planned"
+        },
+        {
+          "id": "task_1.3",
+          "type": "create_directory",
+          "target": "src/config",
+          "status": "planned"
+        },
+        {
+          "id": "task_1.4",
+          "type": "create_directory",
+          "target": "src/middleware",
+          "status": "planned"
+        },
+        {
+          "id": "task_1.5",
+          "type": "create_directory",
+          "target": "src/utils",
+          "status": "planned"
+        },
+        {
+          "id": "task_1.6",
+          "type": "create_file",
+          "target": "src/app.js",
+          "status": "planned"
+        },
+        {
+          "id": "task_1.7",
+          "type": "create_file",
+          "target": "package.json",
+          "status": "planned"
+        },
+        {
+          "id": "task_2.1",
+          "type": "verify_file",
+          "target": "src/app.js",
+          "status": "planned"
+        },
+        {
+          "id": "task_2.2",
+          "type": "verify_file",
+          "target": "package.json",
+          "status": "planned"
+        }
+      ],
+      "planned_task_count": 12,
+      "will_write_real_files": false,
+      "will_run_commands": false,
+      "will_apply_to_real_workspace": false
+    }
+  },
+  "apply_simulation": {
+    "status": "apply_ready_for_human_approval",
+    "requires_human_approval": true,
+    "will_write_real_files": false,
+    "will_run_commands": false,
+    "would_write_real_files_after_approval": true,
+    "would_run_commands_after_approval": true,
+    "apply_plan": {
+      "status": "apply_plan_created",
+      "source_status": "simulated",
+      "requires_human_approval": true,
+      "will_write_real_files": true,
+      "will_run_commands": true,
+      "apply_task_count": 12,
+      "apply_tasks": [
+        {
+          "id": "apply_1",
+          "from_micro_task": "task_0.1",
+          "action": "install_package",
+          "target": "express",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": false,
+          "will_run_commands": true
+        },
+        {
+          "id": "apply_2",
+          "from_micro_task": "task_0.2",
+          "action": "install_package",
+          "target": "dotenv",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": false,
+          "will_run_commands": true
+        },
+        {
+          "id": "apply_3",
+          "from_micro_task": "task_0.3",
+          "action": "install_package",
+          "target": "cors",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": false,
+          "will_run_commands": true
+        },
+        {
+          "id": "apply_4",
+          "from_micro_task": "task_1.1",
+          "action": "create_directory",
+          "target": "src/routes",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_5",
+          "from_micro_task": "task_1.2",
+          "action": "create_directory",
+          "target": "src/controllers",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_6",
+          "from_micro_task": "task_1.3",
+          "action": "create_directory",
+          "target": "src/config",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_7",
+          "from_micro_task": "task_1.4",
+          "action": "create_directory",
+          "target": "src/middleware",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_8",
+          "from_micro_task": "task_1.5",
+          "action": "create_directory",
+          "target": "src/utils",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_9",
+          "from_micro_task": "task_1.6",
+          "action": "create_file",
+          "target": "src/app.js",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_10",
+          "from_micro_task": "task_1.7",
+          "action": "create_file",
+          "target": "package.json",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_11",
+          "from_micro_task": "task_2.1",
+          "action": "verify_file",
+          "target": "src/app.js",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": false,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_12",
+          "from_micro_task": "task_2.2",
+          "action": "verify_file",
+          "target": "package.json",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": false,
+          "will_run_commands": false
+        }
+      ]
+    },
+    "apply_simulation": {
+      "status": "apply_simulated",
+      "apply_task_count": 12,
+      "requires_human_approval": true,
+      "safe_to_request_human_approval": true,
+      "will_write_real_files": false,
+      "will_run_commands": false,
+      "would_write_real_files_after_approval": true,
+      "would_run_commands_after_approval": true,
+      "apply_tasks": [
+        {
+          "id": "apply_1",
+          "from_micro_task": "task_0.1",
+          "action": "install_package",
+          "target": "express",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": false,
+          "will_run_commands": true
+        },
+        {
+          "id": "apply_2",
+          "from_micro_task": "task_0.2",
+          "action": "install_package",
+          "target": "dotenv",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": false,
+          "will_run_commands": true
+        },
+        {
+          "id": "apply_3",
+          "from_micro_task": "task_0.3",
+          "action": "install_package",
+          "target": "cors",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": false,
+          "will_run_commands": true
+        },
+        {
+          "id": "apply_4",
+          "from_micro_task": "task_1.1",
+          "action": "create_directory",
+          "target": "src/routes",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_5",
+          "from_micro_task": "task_1.2",
+          "action": "create_directory",
+          "target": "src/controllers",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_6",
+          "from_micro_task": "task_1.3",
+          "action": "create_directory",
+          "target": "src/config",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_7",
+          "from_micro_task": "task_1.4",
+          "action": "create_directory",
+          "target": "src/middleware",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_8",
+          "from_micro_task": "task_1.5",
+          "action": "create_directory",
+          "target": "src/utils",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_9",
+          "from_micro_task": "task_1.6",
+          "action": "create_file",
+          "target": "src/app.js",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_10",
+          "from_micro_task": "task_1.7",
+          "action": "create_file",
+          "target": "package.json",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": true,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_11",
+          "from_micro_task": "task_2.1",
+          "action": "verify_file",
+          "target": "src/app.js",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": false,
+          "will_run_commands": false
+        },
+        {
+          "id": "apply_12",
+          "from_micro_task": "task_2.2",
+          "action": "verify_file",
+          "target": "package.json",
+          "status": "planned",
+          "requires_approval": true,
+          "will_write_real_files": false,
+          "will_run_commands": false
+        }
+      ]
+    }
+  },
+  "verification": {
+    "status": "pending"
+  },
+  "source": {
+    "created_from": "simulation_report",
+    "created_at": "2026-06-10T12:33:21.723234+00:00",
+    "requires_human_approval": true
+  }
+}

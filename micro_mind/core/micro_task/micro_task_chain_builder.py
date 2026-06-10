@@ -29,6 +29,26 @@ class MicroTaskChainBuilder:
                 target=target,
             ))
 
+        for index, target in enumerate(
+            facts.get("task_specific_files", []),
+            start=1,
+        ):
+            micro_tasks.append(self._task(
+                task_id=f"task_3.{index}",
+                task_type="create_file",
+                target=target,
+            ))
+
+        for index, target in enumerate(
+            facts.get("task_specific_files", []),
+            start=1,
+        ):
+            micro_tasks.append(self._task(
+                task_id=f"task_4.{index}",
+                task_type="verify_file",
+                target=target,
+            ))
+
         return {
             "status": "simulated",
             "task": task,

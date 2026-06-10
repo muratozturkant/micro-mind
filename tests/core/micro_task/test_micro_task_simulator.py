@@ -32,6 +32,13 @@ class FakeLocalLlamaSpecies:
                 "raw_response": {"source": "fake"},
                 "error": None,
             }
+        if "task-specific files" in task:
+            return {
+                "status": "completed",
+                "parsed_response": [],
+                "raw_response": {"source": "fake"},
+                "error": None,
+            }
         return {
             "status": "completed",
             "parsed_response": {
@@ -72,11 +79,12 @@ def test_micro_task_simulator_asks_local_ai_and_returns_simulation(tmp_path):
 
     result = simulator.simulate({"task": "Create a basic Node.js backend API"})
 
-    assert len(local_species.questions) == 3
+    assert len(local_species.questions) == 4
     assert result["status"] == "simulated"
     assert result["facts"]["dependencies"] == ["express", "dotenv", "cors"]
     assert "src/routes" in result["facts"]["directories"]
     assert "src/app.js" in result["facts"]["files"]
+    assert result["facts"]["task_specific_files"] == []
     assert result["facts"]["responsibilities"]["src/app.js"] == "Main application entry point"
     assert {"id": "task_0.1", "type": "install_package", "target": "express", "status": "planned"} in result["micro_tasks"]
     assert {"id": "task_1.1", "type": "create_directory", "target": "src", "status": "planned"} in result["micro_tasks"]

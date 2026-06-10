@@ -9,12 +9,14 @@ class MicroTaskSimulationRunner:
         "base_packages": "collect_base_packages",
         "project_structure": "collect_project_structure",
         "file_responsibilities": "collect_file_responsibilities",
+        "task_specific_files": "collect_task_specific_files",
     }
 
     QUESTION_IDS = {
         "base_packages": "question_0.1",
         "project_structure": "question_1.1",
         "file_responsibilities": "question_2.1",
+        "task_specific_files": "question_3.1",
     }
 
     def __init__(
@@ -90,6 +92,7 @@ class MicroTaskSimulationRunner:
             packages=answers.get("packages"),
             structure=answers.get("structure"),
             responsibilities=answers.get("responsibilities"),
+            task_specific_files=answers.get("task_specific_files"),
         )
         chain = self.chain_builder.build(task, facts)
         simulation = self.simulator.simulate_chain(
@@ -149,6 +152,13 @@ class MicroTaskSimulationRunner:
                 "responsibilities": self.fact_normalizer.normalize(
                     responsibilities=answer,
                 )["responsibilities"],
+            }
+
+        if fact_key == "task_specific_files":
+            return {
+                "task_specific_files": self.fact_normalizer.normalize(
+                    task_specific_files=answer,
+                )["task_specific_files"],
             }
 
         return {}

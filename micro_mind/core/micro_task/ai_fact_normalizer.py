@@ -18,19 +18,31 @@ class AIFactNormalizer:
 
         return json.loads(content)
 
-    def normalize(self, packages=None, structure=None, responsibilities=None) -> dict:
+    def normalize(
+        self,
+        packages=None,
+        structure=None,
+        responsibilities=None,
+        task_specific_files=None,
+    ) -> dict:
         packages = self.parse_json(packages or [])
         structure = self.parse_json(structure or [])
         responsibilities = self.parse_json(responsibilities or {})
+        task_specific_files = self.parse_json(task_specific_files or [])
 
         package_values = self._extract_package_values(packages)
         structure_values = self._extract_structure_values(structure)
         responsibility_values = self._extract_responsibility_values(responsibilities)
+        task_specific_file_values = self._extract_structure_values(task_specific_files)
 
         return {
             "dependencies": self._normalize_list(package_values),
             "directories": self._normalize_structure(structure_values, want="directory"),
             "files": self._normalize_structure(structure_values, want="file"),
+            "task_specific_files": self._normalize_structure(
+                task_specific_file_values,
+                want="file",
+            ),
             "responsibilities": self._normalize_responsibilities(responsibility_values),
         }
 

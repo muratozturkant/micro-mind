@@ -28,6 +28,13 @@ class FakeLocalAI:
                 "raw_response": {"answer": "structure"},
                 "error": None,
             }
+        if "task-specific files" in question:
+            return {
+                "status": "completed",
+                "parsed_response": [],
+                "raw_response": {"answer": "task_specific_files"},
+                "error": None,
+            }
         return {
             "status": "completed",
             "parsed_response": {
@@ -78,13 +85,14 @@ def test_micro_task_simulation_runner_asks_questions_and_returns_full_report():
         "Create a basic Node.js backend API"
     )
 
-    assert len(local_ai.asked_questions) == 3
+    assert len(local_ai.asked_questions) == 4
     assert result["status"] == "simulated"
     assert result["task"] == "Create a basic Node.js backend API"
     assert [question["id"] for question in result["questions"]] == [
         "question_0.1",
         "question_1.1",
         "question_2.1",
+        "question_3.1",
     ]
     assert result["questions"][0]["purpose"] == "collect_base_packages"
     assert result["questions"][0]["raw_response"] == {"answer": "packages"}
@@ -94,6 +102,7 @@ def test_micro_task_simulation_runner_asks_questions_and_returns_full_report():
     assert result["facts"]["dependencies"] == ["express", "dotenv", "cors"]
     assert result["facts"]["directories"] == ["src", "src/routes"]
     assert result["facts"]["files"] == ["src/app.js", "package.json"]
+    assert result["facts"]["task_specific_files"] == []
     assert result["facts"]["responsibilities"]["src/app.js"] == (
         "Main application entry point"
     )

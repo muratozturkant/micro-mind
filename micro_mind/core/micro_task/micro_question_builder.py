@@ -27,6 +27,16 @@ class MicroQuestionBuilder:
                 "src/config, package.json. No extra keys."
             ),
         },
+        {
+            "question_id": "task_specific_files",
+            "fact_key": "task_specific_files",
+            "prompt": (
+                "For this software task, list only task-specific files or paths "
+                "that are not part of a generic Node.js backend template. "
+                "Return compact JSON only as an array. No descriptions. "
+                "Examples: health.route.js, auth.route.js, auth.middleware.js."
+            ),
+        },
     ]
 
     def build(self, task: str, question_plan: list[dict] | None = None) -> list[dict]:
