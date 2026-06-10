@@ -58,3 +58,16 @@ class MicroTaskSimulator:
         )
 
         return self.chain_builder.build(task, facts)
+
+    @staticmethod
+    def simulate_chain(task, facts, micro_tasks):
+        return {
+            "status": "simulated",
+            "task": task,
+            "facts": facts,
+            "micro_tasks": micro_tasks,
+            "planned_task_count": len(micro_tasks),
+            "will_write_real_files": False,
+            "will_run_commands": False,
+            "will_apply_to_real_workspace": False,
+        }

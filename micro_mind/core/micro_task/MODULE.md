@@ -24,6 +24,10 @@ Builds planned micro task chain JSON from normalized facts.
 
 Coordinates the simulation-only planning pipeline with a local species and file queue.
 
+### micro_task_simulation_runner.py
+
+Asks local AI micro questions through dependency injection and returns a full simulation report.
+
 ## Inputs
 
 This module receives:
@@ -31,6 +35,7 @@ This module receives:
 - User task request dictionaries
 - Local advisor JSON answers
 - File-based queue directory
+- Injected local AI objects with `classify_task` or `ask`
 
 ## Outputs
 
@@ -38,6 +43,8 @@ This module returns:
 
 - Sleeping state when there is no work
 - Simulated micro task chain JSON when facts are available
+- Full simulation reports with questions, facts, planned micro tasks and simulation metadata
+- Waiting-for-human-guidance state when a local AI question fails
 - Failed simulation state when local advisor answers cannot be used
 
 ## Rules

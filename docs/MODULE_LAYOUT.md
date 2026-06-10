@@ -74,6 +74,7 @@ micro_mind/
 │   │   ├── ai_fact_normalizer.py
 │   │   ├── micro_task_chain_builder.py
 │   │   ├── micro_task_simulator.py
+│   │   ├── micro_task_simulation_runner.py
 │   │   └── MODULE.md
 │   │
 │   ├── context/
@@ -146,7 +147,8 @@ tests/
 │   │   ├── test_micro_question_builder.py
 │   │   ├── test_ai_fact_normalizer.py
 │   │   ├── test_micro_task_chain_builder.py
-│   │   └── test_micro_task_simulator.py
+│   │   ├── test_micro_task_simulator.py
+│   │   └── test_micro_task_simulation_runner.py
 │   └── context/
 │       └── test_execution_context.py
 │
