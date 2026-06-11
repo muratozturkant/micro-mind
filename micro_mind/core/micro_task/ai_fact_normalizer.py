@@ -35,6 +35,14 @@ class AIFactNormalizer:
         responsibility_values = self._extract_responsibility_values(responsibilities)
         task_specific_file_values = self._extract_structure_values(task_specific_files)
 
+        print("DEBUG packages =", packages)
+        print("DEBUG structure =", structure)
+        print("DEBUG responsibilities =", responsibilities)
+        print("DEBUG task_specific_files =", task_specific_files)
+        print("DEBUG package_values =", package_values)
+        print("DEBUG structure_values =", structure_values)
+        print("DEBUG task_specific_file_values =", task_specific_file_values)
+        
         return {
             "dependencies": self._normalize_list(package_values),
             "directories": self._normalize_structure(structure_values, want="directory"),
