@@ -9,6 +9,20 @@ class LocalLlamaSpecies:
         self.timeout = timeout
         self.http_client = http_client or self._default_http_client
 
+    @staticmethod
+    def _extract_json_content(content: str) -> str:
+        stripped_content = content.strip()
+
+        if stripped_content.startswith("```"):
+            lines = stripped_content.splitlines()
+            if lines and lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines and lines[-1].strip() == "```":
+                lines = lines[:-1]
+            stripped_content = "\n".join(lines).strip()
+
+        return stripped_content
+
     def classify_task(
         self,
         task: str,
@@ -17,7 +31,7 @@ class LocalLlamaSpecies:
         payload = {
             "model": self.model_name,
             "temperature": 0,
-            "max_tokens": max_tokens,
+            "max_tokens": 128,
             "chat_template_kwargs": {
                 "enable_thinking": False,
             },
@@ -43,12 +57,15 @@ class LocalLlamaSpecies:
         try:
             raw_response = self._post_chat_completions(payload)
             content = raw_response["choices"][0]["message"]["content"]
-            parsed_response = json.loads(content)
+            json_content = self._extract_json_content(content)
+            parsed_response = json.loads(json_content)
         except Exception as error:
             return {
                 "status": "failed",
                 "parsed_response": None,
                 "raw_response": locals().get("raw_response"),
+                "raw_content": locals().get("content"),
+                "json_content": locals().get("json_content"),
                 "error": f"JSON classification failed: {error}",
             }
 
