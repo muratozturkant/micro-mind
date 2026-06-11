@@ -9,11 +9,15 @@ class LocalLlamaSpecies:
         self.timeout = timeout
         self.http_client = http_client or self._default_http_client
 
-    def classify_task(self, task: str) -> dict:
+    def classify_task(
+        self,
+        task: str,
+        max_tokens: int = 128,
+    ) -> dict:
         payload = {
             "model": self.model_name,
             "temperature": 0,
-            "max_tokens": 128,
+            "max_tokens": max_tokens,
             "chat_template_kwargs": {
                 "enable_thinking": False,
             },

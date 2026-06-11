@@ -30,14 +30,15 @@ class QuestionPlanValidator:
             prompt = str(prompt).strip()
             lower_prompt = prompt.lower()
 
-            if len(prompt) > 240:
-                return self._rejected("prompt_too_long")
-
-            if "json" not in lower_prompt:
-                return self._rejected("prompt_must_request_json")
-
             if any(phrase in lower_prompt for phrase in self.FORBIDDEN_PROMPT_PHRASES):
                 return self._rejected("prompt_requests_full_code_generation")
+
+            if "json" not in lower_prompt:
+                prompt = f"{prompt} Return compact JSON only."
+                lower_prompt = prompt.lower()
+
+            if len(prompt) > 240:
+                return self._rejected("prompt_too_long")
 
             questions.append({
                 "question_id": self._slug(question_id),

@@ -45,7 +45,9 @@ class MicroTaskSimulationRunner:
         task = task.strip()
         questions_report = []
         answers = {}
-        questions = self._build_questions(task)
+        question_build_result = self._build_questions(task)
+
+        questions = question_build_result["questions"]
 
         for index, question in enumerate(questions):
             report_question = self._report_question(question, index)
@@ -107,6 +109,7 @@ class MicroTaskSimulationRunner:
         return {
             "status": "simulated",
             "task": task,
+            "question_plan": question_build_result["question_plan"],
             "questions": questions_report,
             "facts": facts,
             "micro_tasks": chain["micro_tasks"],
@@ -167,17 +170,38 @@ class MicroTaskSimulationRunner:
         return {}
 
     def _build_questions(self, task):
-        if self.question_plan_runtime is None:
-            return self.question_builder.build(task)
+        if not self.question_plan_runtime:
+            questions = self.question_builder.build(task)
+            return {
+                "questions": questions,
+                "question_plan": {
+                    "status": "default_questions_used",
+                    "source": "default_questions",
+                    "reason": "question_plan_runtime_not_enabled",
+                    "question_count": len(questions),
+                    "planner_prompt": None,
+                    "raw_response": None,
+                    "parsed_response": None,
+                    "error": None,
+                },
+            }
 
         result = self.question_plan_runtime.build_questions(task)
-        if result.get("status") in {
-            "question_plan_created",
-            "fallback_questions_used",
-        }:
-            return result.get("questions", [])
+        questions = result.get("questions", [])
 
-        return self.question_builder.build(task)
+        return {
+            "questions": questions,
+            "question_plan": {
+                "status": result.get("status"),
+                "source": result.get("source"),
+                "reason": result.get("reason"),
+                "question_count": len(questions),
+                "planner_prompt": result.get("planner_prompt"),
+                "raw_response": result.get("raw_response"),
+                "parsed_response": result.get("parsed_response"),
+                "error": result.get("error"),
+            },
+        }
 
     def _report_question(self, question, index):
         question_id = question["question_id"]
@@ -194,6 +218,10 @@ class MicroTaskSimulationRunner:
         return {
             "status": "partial",
             "task": task,
+            "question_plan": {
+                "status": "partial",
+                "source": "unknown",
+            },
             "questions": questions,
             "facts": {},
             "micro_tasks": [],

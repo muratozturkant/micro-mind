@@ -13,7 +13,7 @@ from micro_mind.core.recipes.recipe_matcher import RecipeMatcher
 from micro_mind.core.recipes.recipe_runtime import RecipeRuntime
 from micro_mind.core.recipes.recipe_store import RecipeStore
 from micro_mind.core.species.local_llama_species import LocalLlamaSpecies
-
+from micro_mind.core.question_planner.question_plan_runtime import QuestionPlanRuntime
 
 DEFAULT_ENDPOINT = "http://192.168.1.197:18080"
 DEFAULT_MODEL = "local-qwen"
@@ -61,6 +61,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--no-save",
         action="store_true",
         help="Print the full report without saving recipe or project tree metadata.",
+    )
+
+    parser.add_argument(
+        "--use-question-planner",
+        action="store_true",
+        help="Ask local AI to generate the micro question plan before fact collection.",
     )
     return parser
 
@@ -156,7 +162,13 @@ def main() -> None:
             model_name=args.model,
             timeout=args.timeout,
         )
-        micro_task_runner = MicroTaskSimulationRunner(local_ai=local_ai)
+        question_plan_runtime = None
+        if args.use_question_planner:
+            question_plan_runtime = QuestionPlanRuntime(local_ai=local_ai)
+        micro_task_runner = MicroTaskSimulationRunner(
+            local_ai=local_ai,
+            question_plan_runtime=question_plan_runtime,
+        )
         simulation_report = micro_task_runner.run(args.task)
 
     apply_report = None
@@ -199,6 +211,7 @@ def main() -> None:
         else simulation_report.get("status"),
         "task": args.task,
         "ai_used": ai_used,
+        "question_planner_enabled": args.use_question_planner,
         "recipe_match": recipe_match,
         "recipe_reuse_result": recipe_reuse_result,
         "simulation_report": simulation_report,

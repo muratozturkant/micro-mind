@@ -50,17 +50,24 @@ def test_question_plan_validator_rejects_missing_fields():
     }
 
 
-def test_question_plan_validator_rejects_non_json_prompt():
-    assert QuestionPlanValidator().validate([
+def test_question_plan_validator_appends_json_instruction_to_non_json_prompt():
+    result = QuestionPlanValidator().validate([
         {
             "question_id": "packages",
             "fact_key": "packages",
             "prompt": "List npm packages.",
         }
-    ]) == {
-        "status": "rejected",
-        "reason": "prompt_must_request_json",
-        "questions": [],
+    ])
+
+    assert result == {
+        "status": "accepted",
+        "questions": [
+            {
+                "question_id": "packages",
+                "fact_key": "packages",
+                "prompt": "List npm packages. Return compact JSON only.",
+            }
+        ],
     }
 
 
