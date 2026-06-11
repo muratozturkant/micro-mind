@@ -51,7 +51,14 @@ class AIFactNormalizer:
             return value
 
         if isinstance(value, dict):
-            for key in ("packages", "dependencies", "required_packages", "npm_packages"):
+            for key in (
+                "packages",
+                "dependencies",
+                "required_packages",
+                "npm_packages",
+                "base_packages",
+                "required_npm_packages",
+            ):
                 items = value.get(key)
                 if isinstance(items, list):
                     return items
@@ -69,23 +76,28 @@ class AIFactNormalizer:
                 "files_and_directories",
                 "paths",
                 "items",
+                "task_specific_files",
+                "specific_files",
+                "required_files",
+                "files",
+                "directories",
             ):
                 items = value.get(key)
                 if isinstance(items, list):
                     return items
 
-            directories = value.get("directories")
-            files = value.get("files")
-            combined = []
-
-            if isinstance(directories, list):
-                combined.extend(directories)
-
-            if isinstance(files, list):
-                combined.extend(files)
-
-            if combined:
-                return combined
+            for key in (
+                "path",
+                "file",
+                "filename",
+                "route",
+                "controller",
+                "service",
+                "middleware",
+            ):
+                item = value.get(key)
+                if isinstance(item, str):
+                    return [item]
 
         return []
 
@@ -119,6 +131,7 @@ class AIFactNormalizer:
             if not isinstance(value, str):
                 continue
             cleaned = value.strip().strip("/")
+            cleaned = cleaned.replace("\\", "/")
             if not cleaned:
                 continue
 
