@@ -69,6 +69,35 @@ class FailingLocalAI:
         }
 
 
+class RuntimeLocalAI:
+    def __init__(self):
+        self.asked_questions = []
+
+    def classify_task(self, question):
+        self.asked_questions.append(question)
+        return {
+            "status": "completed",
+            "parsed_response": ["jsonwebtoken"],
+            "raw_response": {"answer": "runtime_packages"},
+            "error": None,
+        }
+
+
+class FakeQuestionPlanRuntime:
+    def build_questions(self, task):
+        return {
+            "status": "question_plan_created",
+            "source": "local_ai",
+            "questions": [
+                {
+                    "question_id": "auth_packages",
+                    "fact_key": "packages",
+                    "prompt": "List auth npm packages as compact JSON only.",
+                }
+            ],
+        }
+
+
 def test_micro_task_simulation_runner_returns_sleeping_state_for_no_work():
     result = MicroTaskSimulationRunner(FakeLocalAI()).run("")
 
@@ -128,3 +157,25 @@ def test_micro_task_simulation_runner_returns_human_guidance_on_failed_ai_answer
     assert result["partial_report"]["questions"][0]["normalized_fact"] == {
         "dependencies": ["express"],
     }
+
+
+def test_micro_task_simulation_runner_can_use_question_plan_runtime_questions():
+    local_ai = RuntimeLocalAI()
+
+    result = MicroTaskSimulationRunner(
+        local_ai,
+        question_plan_runtime=FakeQuestionPlanRuntime(),
+    ).run("Create auth API")
+
+    assert local_ai.asked_questions == [
+        "List auth npm packages as compact JSON only.",
+    ]
+    assert result["status"] == "simulated"
+    assert result["questions"][0]["purpose"] == "collect_packages"
+    assert result["facts"]["dependencies"] == ["jsonwebtoken"]
+    assert {
+        "id": "task_0.1",
+        "type": "install_package",
+        "target": "jsonwebtoken",
+        "status": "planned",
+    } in result["micro_tasks"]

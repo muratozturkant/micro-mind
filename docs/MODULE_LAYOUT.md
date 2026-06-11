@@ -77,6 +77,12 @@ micro_mind/
 │   │   ├── micro_task_simulation_runner.py
 │   │   └── MODULE.md
 │   │
+│   ├── question_planner/
+│   │   ├── question_plan_generator.py
+│   │   ├── question_plan_validator.py
+│   │   ├── question_plan_runtime.py
+│   │   └── MODULE.md
+│   │
 │   ├── context/
 │   │   ├── execution_context.py
 │   │   └── MODULE.md
@@ -149,6 +155,10 @@ tests/
 │   │   ├── test_micro_task_chain_builder.py
 │   │   ├── test_micro_task_simulator.py
 │   │   └── test_micro_task_simulation_runner.py
+│   ├── question_planner/
+│   │   ├── test_question_plan_generator.py
+│   │   ├── test_question_plan_validator.py
+│   │   └── test_question_plan_runtime.py
 │   └── context/
 │       └── test_execution_context.py
 │
@@ -342,6 +352,25 @@ Must not:
 - Run shell commands or package installation
 - Deploy, use Docker or apply changes to a real workspace
 - Add cloud fallback
+
+---
+
+### `core/question_planner`
+
+Owns local-AI-assisted micro question plan creation.
+
+Responsible for:
+
+- Building the prompt used to ask local AI for a question plan
+- Validating and normalizing AI-produced question plans
+- Falling back to default micro questions when local AI fails or returns invalid plans
+
+Must not:
+
+- Execute tasks or workflows
+- Write project files
+- Run shell commands, package installs, Docker or deploy steps
+- Call cloud models
 
 ---
 

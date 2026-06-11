@@ -26,12 +26,14 @@ class MicroTaskSimulationRunner:
         fact_normalizer=None,
         chain_builder=None,
         simulator=None,
+        question_plan_runtime=None,
     ):
         self.local_ai = local_ai
         self.question_builder = question_builder or MicroQuestionBuilder()
         self.fact_normalizer = fact_normalizer or AIFactNormalizer()
         self.chain_builder = chain_builder or MicroTaskChainBuilder()
         self.simulator = simulator or MicroTaskSimulator
+        self.question_plan_runtime = question_plan_runtime
 
     def run(self, task: str) -> dict:
         if not isinstance(task, str) or not task.strip():
@@ -43,9 +45,10 @@ class MicroTaskSimulationRunner:
         task = task.strip()
         questions_report = []
         answers = {}
+        questions = self._build_questions(task)
 
-        for question in self.question_builder.build(task):
-            report_question = self._report_question(question)
+        for index, question in enumerate(questions):
+            report_question = self._report_question(question, index)
             response = self._ask(question["prompt"])
 
             if response.get("status") != "completed":
@@ -163,11 +166,27 @@ class MicroTaskSimulationRunner:
 
         return {}
 
-    def _report_question(self, question):
+    def _build_questions(self, task):
+        if self.question_plan_runtime is None:
+            return self.question_builder.build(task)
+
+        result = self.question_plan_runtime.build_questions(task)
+        if result.get("status") in {
+            "question_plan_created",
+            "fallback_questions_used",
+        }:
+            return result.get("questions", [])
+
+        return self.question_builder.build(task)
+
+    def _report_question(self, question, index):
         question_id = question["question_id"]
         return {
-            "id": self.QUESTION_IDS[question_id],
-            "purpose": self.PURPOSES[question_id],
+            "id": self.QUESTION_IDS.get(question_id, f"question_{index}.1"),
+            "purpose": self.PURPOSES.get(
+                question_id,
+                f"collect_{question['fact_key']}",
+            ),
             "question": question["prompt"],
         }
 
