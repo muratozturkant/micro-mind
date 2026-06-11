@@ -51,7 +51,7 @@ def test_local_llama_species_sends_enable_thinking_false_and_parses_json():
     assert captured["timeout"] == 7
     assert captured["body"]["model"] == "local-model"
     assert captured["body"]["temperature"] == 0
-    assert captured["body"]["max_tokens"] == 128
+    assert captured["body"]["max_tokens"] == 256
     assert captured["body"]["chat_template_kwargs"] == {"enable_thinking": False}
     assert "JSON" in captured["body"]["messages"][0]["content"]
     assert result["status"] == "completed"
