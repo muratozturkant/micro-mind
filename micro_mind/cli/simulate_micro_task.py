@@ -15,8 +15,27 @@ from micro_mind.core.recipes.recipe_store import RecipeStore
 from micro_mind.core.species.local_llama_species import LocalLlamaSpecies
 from micro_mind.core.question_planner.question_plan_runtime import QuestionPlanRuntime
 
-DEFAULT_ENDPOINT = "http://192.168.1.197:18080"
-DEFAULT_MODEL = "local-qwen"
+DEFAULT_ENDPOINT = "http://192.168.1.197:18082"
+DEFAULT_MODEL = "local-fast"
+DEFAULT_MODEL_ROLE = "fast"
+MODEL_ROUTES = {
+    "planner": {
+        "endpoint": "http://192.168.1.197:18080",
+        "model": "local-planner",
+    },
+    "coder": {
+        "endpoint": "http://192.168.1.197:18081",
+        "model": "deepseek-coder",
+    },
+    "fast": {
+        "endpoint": "http://192.168.1.197:18082",
+        "model": "local-fast",
+    },
+    "verifier": {
+        "endpoint": "http://192.168.1.197:18083",
+        "model": "local-verifier",
+    },
+}
 DEFAULT_RECIPES_DIR = ".micro_mind/recipes"
 DEFAULT_PROJECT_TREE_PATH = ".micro_mind/project_tree.jsonl"
 
@@ -32,14 +51,20 @@ def build_parser() -> argparse.ArgumentParser:
         help="Task to simulate, for example: 'Create a basic Node.js backend API'.",
     )
     parser.add_argument(
+        "--model-role",
+        choices=sorted(MODEL_ROUTES.keys()),
+        default=DEFAULT_MODEL_ROLE,
+        help="Local model role to use: planner, coder, fast, or verifier.",
+    )
+    parser.add_argument(
         "--endpoint",
-        default=DEFAULT_ENDPOINT,
-        help="OpenAI-compatible local llama.cpp base endpoint.",
+        default=None,
+        help="Override the OpenAI-compatible local llama.cpp base endpoint.",
     )
     parser.add_argument(
         "--model",
-        default=DEFAULT_MODEL,
-        help="Local model name sent to the chat completions endpoint.",
+        default=None,
+        help="Override the local model name sent to the chat completions endpoint.",
     )
     parser.add_argument(
         "--timeout",
@@ -157,9 +182,13 @@ def main() -> None:
             "score": recipe_match["best_match"].get("score"),
         }
     else:
+        selected_model_route = MODEL_ROUTES[args.model_role]
+        endpoint = args.endpoint or selected_model_route["endpoint"]
+        model_name = args.model or selected_model_route["model"]
+
         local_ai = LocalLlamaSpecies(
-            endpoint=args.endpoint,
-            model_name=args.model,
+            endpoint=endpoint,
+            model_name=model_name,
             timeout=args.timeout,
         )
         question_plan_runtime = None
@@ -211,6 +240,9 @@ def main() -> None:
         else simulation_report.get("status"),
         "task": args.task,
         "ai_used": ai_used,
+        "model_role": args.model_role,
+        "endpoint": args.endpoint or MODEL_ROUTES[args.model_role]["endpoint"],
+        "model": args.model or MODEL_ROUTES[args.model_role]["model"],
         "question_planner_enabled": args.use_question_planner,
         "recipe_match": recipe_match,
         "recipe_reuse_result": recipe_reuse_result,
